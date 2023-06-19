@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { api, type RouterOutputs } from "~/utils/api";
 import { NoteEditor } from "./NoteEditor";
-import { create } from "domain";
 
 const Content = () => {
   type Topic = RouterOutputs["topics"]["getAll"][0];
