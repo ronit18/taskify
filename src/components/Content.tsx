@@ -50,7 +50,7 @@ const Content = () => {
 
   return (
     <div className="grid grid-cols-4 gap-2">
-      <div className="h-[92vh] bg-base-200 px-2">
+      <div className="bg-base-200 px-2">
         <ul className="menu rounded-box w-56  p-2">
           {topics?.map((topic) => (
             <li key={topic.id}>
