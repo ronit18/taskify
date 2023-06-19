@@ -4,6 +4,8 @@
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { api, type RouterOutputs } from "~/utils/api";
+import { NoteEditor } from "./NoteEditor";
+import { create } from "domain";
 
 const Content = () => {
   type Topic = RouterOutputs["topics"]["getAll"][0];
@@ -26,10 +28,25 @@ const Content = () => {
       void refetchTopics();
     },
   });
+
+  const { data: notes, refetch: refetchNotes } = api.note.getAll.useQuery(
+    {
+      topicId: selectedTopic?.id ?? "",
+    },
+    {
+      enabled: sessionData?.user !== undefined && selectedTopic !== null,
+    }
+  );
+  const createNote = api.note.create.useMutation({
+    onSuccess: () => {
+      void refetchNotes();
+    },
+  });
+
   return (
-    <div className="mx-5 mt-5 grid grid-cols-4 gap-2">
-      <div className="px-2">
-        <ul className="menu rounded-box w-56 bg-base-100 p-2">
+    <div className="grid grid-cols-4 gap-2">
+      <div className="h-[92vh] bg-base-200 px-2">
+        <ul className="menu rounded-box w-56  p-2">
           {topics?.map((topic) => (
             <li key={topic.id}>
               <a
@@ -47,7 +64,7 @@ const Content = () => {
         <input
           type="text"
           placeholder="New Topic...."
-          className="input-bordered input input-sm w-full"
+          className="input-bordered input input-sm h-16 w-full"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               createTopic.mutate({ title: e.currentTarget.value });
@@ -56,7 +73,17 @@ const Content = () => {
           }}
         />
       </div>
-      <div className="col-span-3"></div>
+      <div className="col-span-3">
+        <NoteEditor
+          onSave={({ title, content }) => {
+            void createNote.mutate({
+              title,
+              content,
+              topicId: selectedTopic?.id ?? "",
+            });
+          }}
+        />
+      </div>
     </div>
   );
 };
